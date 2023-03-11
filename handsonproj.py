@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import string
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import classification_report, confusion_matrix
 
 from jupyterthemes import jtplot
 jtplot.style(theme='monokai',context='notebook',ticks=True, grid=False)
@@ -65,23 +69,60 @@ plt.imshow(WordCloud().generate(sentences_as_one_string))
 def message_cleaning(message):
     Test_punc_removed = [char for char in message if char not in string.punctuation]
     Test_punc_removed_join = ''.join(Test_punc_removed)
-    #Test_punc_removed_join_clean = [word for word in Test_punc_removed_join.split() if word.lower() not in stopwords.words('english')]
-    #return Test_punc_removed_join_clean
-    print(Test_punc_removed_join)
-    return Test_punc_removed_join
+    Test_punc_removed_join_clean = [word for word in Test_punc_removed_join.split() if word.lower() not in stopwords.words('english')]
+    return Test_punc_removed_join_clean
+    #print(Test_punc_removed_join)
+    #return Test_punc_removed_join
 
 #
-reviews_df['clean'] = reviews_df['verified_reviews'].apply(message_cleaning)
-#reviews_df_clean = reviews_df.apply(message_cleaning, args = (reviews_df['verified_reviews']) )
+reviews_df_clean = reviews_df['verified_reviews'].apply(message_cleaning)
 
-#print(reviews_df['verified_reviews'][5]) 
-    
+#show the original review
+print(reviews_df['verified_reviews'][5])
+
+#show the cleaned up version
+print(reviews_df_clean[5])
+
+#
+vectorizer = CountVectorizer(analyzer = message_cleaning)
+reviews_countvectorizer = vectorizer.fit_transform(reviews_df['verified_reviews'])
+
+print(vectorizer.get_feature_names_out())
+
+#
+print(reviews_countvectorizer.toarray())
+
+#
+reviews_countvectorizer.shape
+
+#
+reviews = pd.DataFrame(reviews_countvectorizer.toarray())
+
+#
+X = reviews
+
+#
+y = reviews_df['feedback']
+print(y)
+
+#
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
+
+#
+from sklearn.naive_bayes import MultinomialNB
+
+NB_classifier = MultinomialNB()
+NB_classifier.fit(X_train, y_train)
+
+#
+y_predict_test = NB_classifier.predict(X_test)
+cm = confusion_matrix(y_test, y_predict_test)
+sns.heatmeap(cm, annot=True)
+show()
 
 
-
-
-
-
+print(clasification_report(y_test, y_predict_test))
 
 
 
