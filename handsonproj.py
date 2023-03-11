@@ -6,6 +6,7 @@ import string
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.linear_model import LogisticRegression
 
 from jupyterthemes import jtplot
 jtplot.style(theme='monokai',context='notebook',ticks=True, grid=False)
@@ -32,7 +33,7 @@ reviews_df['length'].plot(bins=100, kind='hist')
 #show()
 
 #plotting feedback
-sns.countplot(x=reviews_df['feedback'])
+#sns.countplot(x=reviews_df['feedback'])
 #show()
 
 #separarting positive and negative reviews
@@ -87,10 +88,10 @@ print(reviews_df_clean[5])
 vectorizer = CountVectorizer(analyzer = message_cleaning)
 reviews_countvectorizer = vectorizer.fit_transform(reviews_df['verified_reviews'])
 
-print(vectorizer.get_feature_names_out())
+#print(vectorizer.get_feature_names_out())
 
 #
-print(reviews_countvectorizer.toarray())
+#print(reviews_countvectorizer.toarray())
 
 #
 reviews_countvectorizer.shape
@@ -103,13 +104,13 @@ X = reviews
 
 #
 y = reviews_df['feedback']
-print(y)
+#print(y)
 
 #
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
 
-#
+#By Naive Bayes Classifier
 from sklearn.naive_bayes import MultinomialNB
 
 NB_classifier = MultinomialNB()
@@ -118,11 +119,35 @@ NB_classifier.fit(X_train, y_train)
 #
 y_predict_test = NB_classifier.predict(X_test)
 cm = confusion_matrix(y_test, y_predict_test)
-sns.heatmeap(cm, annot=True)
-show()
+#sns.heatmap(cm, annot=True)
+#plt.show()
 
 
-print(clasification_report(y_test, y_predict_test))
+print(classification_report(y_test, y_predict_test))
+
+#By logistic regression
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+cm = confusion_matrix(y_pred,y_test)
+#sns.heatmap(cm, annot=True)
+#plt.show()
+
+
+
+#By gradient boosting classfier
+from sklearn.ensemble import GradientBoostingClassifier
+model = GradientBoostingClassifier()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+cm = confusion_matrix(y_pred,y_test)
+sns.heatmap(cm, annot=True)
+plt.show()
+
 
 
 
