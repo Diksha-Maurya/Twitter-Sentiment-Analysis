@@ -7,9 +7,9 @@ Key steps include:
 - Word cloud generation for positive and negative reviews
 - Feature extraction using CountVectorizer
 - Model training & evaluation with:
--- Naive Bayes
--- Logistic Regression
--- Gradient Boosting Classifier
+  - Naive Bayes
+  - Logistic Regression
+  - Gradient Boosting Classifier
 - Visualization of confusion matrices for performance comparison
 
 The project uses Python, Pandas, Seaborn, Matplotlib, NLTK, and scikit-learn.
